@@ -36,6 +36,10 @@ class User(db.Model, UserMixin):
         )
         return reset_token
 
+
+
+
+
     @staticmethod
     def verify_reset_token(token):
         try:
