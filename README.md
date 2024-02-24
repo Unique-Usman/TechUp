@@ -1,6 +1,3 @@
-Of course! Here's the revised README.md with the website named "techUp":
-
-```markdown
 # techUp - Tech Opportunities and Internships Website (Still Under Development)
 
 techUp is a website designed to help users find and manage tech opportunities and internships.
@@ -36,4 +33,3 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-```
