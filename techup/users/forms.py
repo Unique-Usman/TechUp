@@ -7,6 +7,7 @@ from wtforms import (StringField, PasswordField, SubmitField, BooleanField)
 from wtforms.validators import (DataRequired, Length, Email,
                                 EqualTo, ValidationError)
 from flask_login import current_user
+from techup.models import User
 
 
 class RegistrationForm(FlaskForm):
@@ -20,8 +21,8 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField("Confirm Password",
                                      validators=[DataRequired(),
                                                  EqualTo("password")])
-    picture = FileField("Upload Profile Picture",
-                        validators=[FileAllowed(["jpg", "png"])])
+    # picture = FileField("Upload Profile Picture",
+    #                     validators=[FileAllowed(["jpg", "png"])])
     submit = SubmitField("Create Account")
 
     def validate_username(self, username):
