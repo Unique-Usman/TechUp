@@ -25,5 +25,6 @@ class Opportunity(BaseModel, Base):
     status = Column(Enum('open', 'close'))
     user_id = Column(String(60), ForeignKey('users.id'))
     opportunity_type_id = Column(String(60), ForeignKey('opportunity_type.id'))
+    description = Column(String(256), nullable=True)
     upvote = Column(Integer)
     downvote = Column(Integer)

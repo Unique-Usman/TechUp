@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, BLOB, ForeignKey, delete
+from sqlalchemy import Column, String, BLOB, ForeignKey, Table
 from os import getenv
 from sqlalchemy.orm import backref, relationship
 # from models.place import Place
@@ -13,6 +13,16 @@ The user class represents the User of the TechUp
 """
 
 # storage_type = getenv("HBNB_TYPE_STORAGE")
+
+
+subscriptions = Table("subscriptions", Base.metadata,
+              Column("user_id",String(60),
+                     ForeignKey("users.id"),
+                     primary_key=True, nullable=False),
+              Column("opportunity_type_id", String(60),
+                     ForeignKey("opportunity_type.id"),
+                     primary_key=True, nullable=False))
+
 
 class User(BaseModel, Base):
     """User class which inherit from BaseModel"""
@@ -28,8 +38,8 @@ class User(BaseModel, Base):
     picture = Column(BLOB, nullable=True)
     opportunities = relationship("Opportunity", 
                             backref="user", cascade="all, delete, delete-orphan")
-    subscriptions = relationship("Subscription", 
-                            backref="user", cascade="all, delete, delete-orphan")
+    subscriptions = relationship("Opportunity_type", secondary=subscriptions,
+                             backref="users", viewonly=False)
 
     def __init__(self, *args, **kwargs):
         """

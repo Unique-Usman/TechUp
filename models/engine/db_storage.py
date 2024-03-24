@@ -5,13 +5,12 @@ from os import getenv
 from sqlalchemy import create_engine, MetaData
 from models.base_model import Base
 from models.user import User
-from models.subscription import Subscription
 from models.opportunities import Opportunity
 from models.opportunity_type import Opportunity_type
 from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 
-models = [User, Subscription, Opportunity, Opportunity_type]
+models = [User, Opportunity, Opportunity_type]
 class DBStorage:
     """
     Database storage engine for alchemy
