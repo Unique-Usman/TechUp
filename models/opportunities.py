@@ -3,7 +3,6 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import (Column, String, BLOB, Integer,
                         ForeignKey, delete, DateTime, Enum
                         )
-from os import getenv
 from sqlalchemy.orm import backref, relationship
 from datetime import datetime
 # from models.place import Place

@@ -12,20 +12,24 @@ import hashlib
 The user class represents the User of the TechUp
 """
 
-storage_type = getenv("HBNB_TYPE_STORAGE")
+# storage_type = getenv("HBNB_TYPE_STORAGE")
 
 class User(BaseModel, Base):
     """User class which inherit from BaseModel"""
     
     __tablename__ = "users"
 
-    email = Column(String(128), nullable=False)
-    password = Column(String(128), nullable=False)
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
     github = Column(String(256), nullable=True)
     twitter = Column(String(256), nullable=True)
-    picture = Column(BLOB)
+    picture = Column(BLOB, nullable=True)
+    opportunities = relationship("Opportunity", 
+                            backref="user", cascade="all, delete, delete-orphan")
+    subscriptions = relationship("Subscrwhat is thwhy iption", 
+                            backref="user", cascade="all, delete, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         """

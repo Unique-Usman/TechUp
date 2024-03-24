@@ -11,3 +11,7 @@ class Opportunity_type(BaseModel, Base):
 
     __tablename__ = "opportunity_type"
     name = Column(String(128), nullable=False)
+    opportunities = relationship("Opportunity", 
+                            backref="Opportunity_type")
+    subscriptions = relationship("Subscription", 
+                            backref="opportunity_type", cascade="all, delete, delete-orphan")

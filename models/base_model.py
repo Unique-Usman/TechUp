@@ -4,14 +4,12 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 import models
-from os import getenv
 
 # This module  which define base class for all the subclass
 # in this TechUp Project. Other classes are
 # User, Opportunities, Opportunity_type etc.
 
 Base = declarative_base()
-storage_type = getenv("HBNB_TYPE_STORAGE")
 
 class BaseModel:
     """This the base class for other class
@@ -92,6 +90,6 @@ class BaseModel:
         rdic["created_at"] = self.created_at.isoformat(sep='T', timespec='microseconds')
         if "_sa_instance_state" in rdic:
             del rdic["_sa_instance_state"]
-        if storage_type == "db" and self.__class__.__name__ == "User":
-            del rdic["password"]
+        # if storage_type == "db" and self.__class__.__name__ == "User":
+            # del rdic["password"]
         return rdic
