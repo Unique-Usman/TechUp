@@ -28,7 +28,7 @@ class User(BaseModel, Base):
     picture = Column(BLOB, nullable=True)
     opportunities = relationship("Opportunity", 
                             backref="user", cascade="all, delete, delete-orphan")
-    subscriptions = relationship("Subscrwhat is thwhy iption", 
+    subscriptions = relationship("Subscription", 
                             backref="user", cascade="all, delete, delete-orphan")
 
     def __init__(self, *args, **kwargs):
