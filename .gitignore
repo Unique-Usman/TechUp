@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+setup_mysql_dev.sql
 
 # Distribution / packaging
 .Python
