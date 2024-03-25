@@ -43,3 +43,47 @@ def create_user():
     storage.new(user)
     storage.save()
     return jsonify(user.to_dict()), 201
+
+
+@app_views.route("/users/<user_id>", strict_slashes=False)
+def get_user(user_id):
+    """
+    Returns the User with id `user_id`
+    """
+    user = storage.get(User, user_id)
+    if not user:
+        abort(404)
+    user = user.to_dict()
+    return jsonify(user)
+
+
+@app_views.route("/users/<user_id>", methods=["PUT"], strict_slashes=False)
+def update_user(user_id):
+    """
+    Updates information of User with id `user_id`
+    """
+    user = storage.get(User, user_id)
+    if not user:
+        abort(404)
+    content_type = request.headers.get("Content-Type")
+    if content_type != "application/json":
+        return jsonify({"message": "Not a JSON"}), 400
+    content = request.get_json()
+    for key, value in content.items():
+        if key not in ["id", "created_at", "updated_at", "email"]:
+            setattr(user, key, value)
+    storage.save()
+    return jsonify(user.to_dict()), 200
+
+
+@app_views.route("/users/<user_id>", methods=["DELETE"], strict_slashes=False)
+def delete_user(user_id):
+    """
+    Deletes the User with id `user_id`
+    """
+    user = storage.get(User, user_id)
+    if not user:
+        abort(404)
+    storage.delete(user)
+    storage.save()
+    return jsonify({}), 200
