@@ -3,7 +3,7 @@
 Handles all the default RESTful API actions of the Opportunity object
 """
 from api.v1.views import app_views
-from models.user import Opportunity
+from models.opportunities import Opportunity
 from flask import abort, jsonify, request
 from models import storage
 
