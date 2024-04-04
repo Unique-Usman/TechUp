@@ -5,7 +5,9 @@ Handles all the default RESTful API actions of the User object
 from api.v1.views import app_views
 from models.user import User
 from flask import abort, jsonify, request
+import validators
 from models import storage
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 @app_views.route("/users", strict_slashes=False)
@@ -20,8 +22,7 @@ def get_users():
         all_users_list.append(user.to_dict())
     return jsonify(all_users_list)
 
-
-@app_views.route("/users", methods=["POST"], strict_slashes=False)
+@app_views.route("/register", methods=["POST"], strict_slashes=False)
 def create_user():
     """
     Creates a new user
@@ -34,12 +35,18 @@ def create_user():
         return jsonify({"message": "Missing password"}), 400
     if "email" not in content:
         return jsonify({"message": "Missing email"}), 400
+    if not validators.email(email):
+        return jsonify({'error': "Email is not valid"}), 400 
     if "github_link" not in content:
         return jsonify({"message": "Missing Github link"}), 400
+    if "username" not in content:
+        return jsonify({"message": "Missing User name"}), 400
+    pwd_hash = generate_password_hash(password)
     user = User()
     for key, value in content.items():
-        if key not in ["id", "created_at", "updated_at"]:
+        if key not in ["id", "created_at", "updated_at", "password"]:
             setattr(user, key, value)
+    setattr(user, "password", pwd_hash)
     storage.new(user)
     storage.save()
     return jsonify(user.to_dict()), 201
