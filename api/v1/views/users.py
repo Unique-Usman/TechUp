@@ -22,6 +22,7 @@ def get_users():
         all_users_list.append(user.to_dict())
     return jsonify(all_users_list)
 
+
 @app_views.route("/register", methods=["POST"], strict_slashes=False)
 def create_user():
     """
@@ -35,12 +36,19 @@ def create_user():
         return jsonify({"message": "Missing password"}), 400
     if "email" not in content:
         return jsonify({"message": "Missing email"}), 400
+    email = content.get("email")
+    existing_email = storage.get(User, email=email)
+    if existing_email:
+        return jsonify({
+            'error': "A user with this email address already exists"}
+            ), 400
     if not validators.email(email):
-        return jsonify({'error': "Email is not valid"}), 400 
-    if "github_link" not in content:
+        return jsonify({'error': "Email is not valid"}), 400
+    if "github" not in content:
         return jsonify({"message": "Missing Github link"}), 400
-    if "username" not in content:
-        return jsonify({"message": "Missing User name"}), 400
+    # if "username" not in content:
+        # return jsonify({"message": "Missing User name"}), 400
+    password = content.get("password")
     pwd_hash = generate_password_hash(password)
     user = User()
     for key, value in content.items():
@@ -57,7 +65,7 @@ def get_user(user_id):
     """
     Returns the User with id `user_id`
     """
-    user = storage.get(User, user_id)
+    user = storage.get(User, id=user_id)
     if not user:
         abort(404)
     user = user.to_dict()
@@ -69,7 +77,7 @@ def update_user(user_id):
     """
     Updates information of User with id `user_id`
     """
-    user = storage.get(User, user_id)
+    user = storage.get(User, id=user_id)
     if not user:
         abort(404)
     content_type = request.headers.get("Content-Type")
@@ -88,7 +96,7 @@ def delete_user(user_id):
     """
     Deletes the User with id `user_id`
     """
-    user = storage.get(User, user_id)
+    user = storage.get(User, id=user_id)
     if not user:
         abort(404)
     storage.delete(user)
