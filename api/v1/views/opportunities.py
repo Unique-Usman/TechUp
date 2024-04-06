@@ -103,8 +103,7 @@ def get_all_opportunities_of_user(user_id):
     """
     Returns all the opportunities of a user with id `user_id`
     """
-    opportunities = storage.__session.query(Opportunity).filter_by(
-                    user_id=user_id).all()
+    opportunities = storage.get(Opportunity, user_id=user_id)
     user_opportunities = []
     for opportunity in opportunites:
         user_opportunities.append(opportunity.to_dict())
