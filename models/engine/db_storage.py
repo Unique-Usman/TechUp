@@ -11,6 +11,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 
 models = [User, Opportunity, Opportunity_type]
+
+
 class DBStorage:
     """
     Database storage engine for alchemy
@@ -46,7 +48,7 @@ class DBStorage:
                     key = obj.__class__.__name__ + '.' + obj.id
                     result[key] = obj
         return (result)
-    
+
     def new(self, obj) -> None:
         """
         Add new object to the database
@@ -87,25 +89,29 @@ class DBStorage:
         """
         self.__session.close()
 
-    def get(self, cls, id):
+    def get(self, cls, **kwargs):
         """
         A method to retrieve an Object by
-        cls and id
+        cls and any kwarg
         """
-        objs = self.__session.query(cls).filter_by(id=id).first()
+        for key, value in kwargs.items():
+            if key == "id":
+                objs = self.__session.query(cls).filter_by(id=value).first()
+            else:
+                objs = self.__session.query(cls).filter_by(
+                        **{key: value}).first()
         return objs
 
     def count(self, cls=None):
         """
         Returns all the number of object in a cls
-        
         If the class does not exist, it returns all
         the object in the storage
         """
         if cls:
             objs = self.__session.query(cls).all()
             return len(objs)
-        
+
         count = 0
         for clss in models:
             objs = self.__session.query(clss).all()
