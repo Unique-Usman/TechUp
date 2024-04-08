@@ -118,3 +118,10 @@ class DBStorage:
             count += len(objs)
 
         return count
+
+
+    def execute(self, association_table, data):
+        """
+        Adds data to association table
+        """
+        return self.__session.execute(association_table.insert(), data)
