@@ -17,11 +17,11 @@ def get_opportunities():
     all_opportunities = storage.all(Opportunity)
     all_opportunities_list = []
     for opportunity in all_opportunities.values():
-        all_opportunites_list.append(opportunity.to_dict())
+        all_opportunities_list.append(opportunity.to_dict())
     return jsonify(all_opportunities_list)
 
 
-@app_views.route("/opportunities", strict_slashes=False)
+@app_views.route("/opportunities", methods=["POST"], strict_slashes=False)
 def create_opportunity():
     """
     Creates a new opportunity
@@ -55,7 +55,7 @@ def get_opportunity(opportunity_id):
     """
     Returns the Opportunity with id `opportunity_id`
     """
-    opportunity = storage.get(Opportunity, opportunity_id)
+    opportunity = storage.get(Opportunity, id=opportunity_id)
     if not opportunity:
         abort(404)
     opportunity = opportunity.to_dict()
@@ -69,7 +69,7 @@ def update_opportunity(opportunity_id):
     """
     Updates an Opportunity object
     """
-    opportunity = storage.get(Opportunity, opportunity_id)
+    opportunity = storage.get(Opportunity, id=opportunity_id)
     if not opportunity:
         abort(404)
     content_type = request.headers.get("Content-Type")
@@ -90,7 +90,7 @@ def delete_opportunity(opportunity_id):
     """
     Deletes the Opportunity with id `opportunity_id`
     """
-    opportunity = opportunity.get(Opportunity, opportunity_id)
+    opportunity = opportunity.get(Opportunity, id=opportunity_id)
     if not opportunity:
         abort(404)
     storage.delete(opportunity)
@@ -98,13 +98,13 @@ def delete_opportunity(opportunity_id):
     return jsonify({}), 200
 
 
-@app_views.route("/user/<user_id>/opportunities", strict_slashes=False)
+@app_views.route("/users/<user_id>/opportunities", strict_slashes=False)
 def get_all_opportunities_of_user(user_id):
     """
     Returns all the opportunities of a user with id `user_id`
     """
     opportunities = storage.get(Opportunity, user_id=user_id)
     user_opportunities = []
-    for opportunity in opportunites:
+    for opportunity in opportunities:
         user_opportunities.append(opportunity.to_dict())
     return jsonify(user_opportunities)

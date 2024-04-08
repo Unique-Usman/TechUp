@@ -38,6 +38,8 @@ def create_user():
         return jsonify({"message": "Missing email"}), 400
     email = content.get("email")
     existing_email = storage.get(User, email=email)
+    if len(existing_email) > 0:
+        existing_email = existing_email[0]
     if existing_email:
         return jsonify({
             'error': "A user with this email address already exists"}
