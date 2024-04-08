@@ -30,10 +30,7 @@ def create_subscriptions(user_id, opp_type_id):
     content_type = request.headers.get("Content-Type")
     if content_type != "application/json":
         return jsonify({"message": "Not a JSON"}), 400
-    content = request.get_json()
-    subscription = subscriptions()
-    setattr(subscription, 'user_id', user_id)
-    setattr(subscription, 'opportunity_type_id', opp_type_id)
-    storage.new(subscription)
+    data = {'user_id': user_id, 'opportunity_type_id': opp_type_id}
+    subscription = storage.execute(subscriptions, data)
     storage.save()
-    return jsonify(subscription.to_dict())
+    return jsonify({"message": "Subscribed successfully"})
