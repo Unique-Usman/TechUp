@@ -99,7 +99,7 @@ class DBStorage:
                 objs = self.__session.query(cls).filter_by(id=value).first()
             else:
                 objs = self.__session.query(cls).filter_by(
-                        **{key: value}).first()
+                        **{key: value}).all()
         return objs
 
     def count(self, cls=None):
