@@ -3,10 +3,7 @@
 Entry point for the api
 """
 from flask import Flask, make_response, jsonify
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
+from api.v1 import app
 
 from models import storage
 from api.v1.views import app_views

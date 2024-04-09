@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, BLOB, ForeignKey, Table
+from sqlalchemy import Column, String, BLOB, ForeignKey, Table, Boolean
 from os import getenv
 from sqlalchemy.orm import backref, relationship
 # from models.place import Place
@@ -32,7 +32,8 @@ class User(BaseModel, Base):
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
     email = Column(String(128), nullable=False)
-    password = Column(String(128), nullable=False)
+    confirmed = Column(Boolean, nullable=False, default=False)
+    password = Column(String(256), nullable=False)
     github = Column(String(256), nullable=True)
     twitter = Column(String(256), nullable=True)
     picture = Column(BLOB, nullable=True)
@@ -41,21 +42,21 @@ class User(BaseModel, Base):
     subscriptions = relationship("Opportunity_type", secondary=subscriptions,
                              backref="users", viewonly=False)
 
-    def __init__(self, *args, **kwargs):
-        """
-        instantiates user object
-        """
-        if kwargs:
-            pwd = kwargs.pop('password', None)
-            if pwd:
-                User.__set_password(self, pwd)
-        super().__init__(*args, **kwargs)
+#    def __init__(self, *args, **kwargs):
+#        """
+#        instantiates user object
+#        """
+#        if kwargs:
+#            pwd = kwargs.pop('password', None)
+#            if pwd:
+#                User.__set_password(self, pwd)
+#        super().__init__(*args, **kwargs)
 
-    def __set_password(self, pwd):
-        """
-        custom setter: encrypts password to MD5
-        """
-        secure = hashlib.md5()
-        secure.update(pwd.encode("utf-8"))
-        secure_password = secure.hexdigest()
-        setattr(self, "password", secure_password)
+#    def __set_password(self, pwd):
+#        """
+#        custom setter: encrypts password to MD5
+#        """
+#        secure = hashlib.md5()
+#        secure.update(pwd.encode("utf-8"))
+#        secure_password = secure.hexdigest()
+#        setattr(self, "password", secure_password)

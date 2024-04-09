@@ -8,6 +8,7 @@ from flask import abort, jsonify, request
 import validators
 from models import storage
 from werkzeug.security import check_password_hash, generate_password_hash
+from api.v1.views.utils import send_confirm_email, get_token, verify_reset_token
 
 
 @app_views.route("/users", strict_slashes=False)
@@ -21,7 +22,6 @@ def get_users():
     for user in all_users.values():
         all_users_list.append(user.to_dict())
     return jsonify(all_users_list)
-
 
 @app_views.route("/register", methods=["POST"], strict_slashes=False)
 def create_user():
@@ -50,6 +50,7 @@ def create_user():
         return jsonify({"message": "Missing Github link"}), 400
     # if "username" not in content:
         # return jsonify({"message": "Missing User name"}), 400
+    token = get_token(email)
     password = content.get("password")
     pwd_hash = generate_password_hash(password)
     user = User()
@@ -57,10 +58,22 @@ def create_user():
         if key not in ["id", "created_at", "updated_at", "password"]:
             setattr(user, key, value)
     setattr(user, "password", pwd_hash)
+    setattr(user, "confirmed", False)
     storage.new(user)
     storage.save()
+    send_confirm_email(email, token)
     return jsonify(user.to_dict()), 201
 
+@app_views.route('/confirm-email', methods=['GET'])
+def confirm_email():
+    email = request.args.get('email')
+    token = request.args.get('token')
+    user =  verify_reset_token(token)
+    if not user:
+        return jsonify({'message': 'Invalid token'}), 400
+    user.confirmed = True
+    storage.save()
+    return jsonify({'message': 'Email confirmed successfully'}), 200
 
 @app_views.route("/users/<user_id>", strict_slashes=False)
 def get_user(user_id):
