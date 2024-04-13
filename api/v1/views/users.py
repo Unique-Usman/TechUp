@@ -6,12 +6,15 @@ from api.v1.views import app_views
 from models.user import User
 from flask import abort, jsonify, request
 import validators
+import datetime
 from models import storage
 from werkzeug.security import check_password_hash, generate_password_hash
 from api.v1.views.utils import send_confirm_email, get_token, verify_reset_token
+from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 
 
 @app_views.route("/users", strict_slashes=False)
+@jwt_required()
 def get_users():
     """
     Retrieves all the User objects from the database and
@@ -88,6 +91,7 @@ def get_user(user_id):
 
 
 @app_views.route("/users/<user_id>", methods=["PUT"], strict_slashes=False)
+@jwt_required()
 def update_user(user_id):
     """
     Updates information of User with id `user_id`
@@ -107,6 +111,7 @@ def update_user(user_id):
 
 
 @app_views.route("/users/<user_id>", methods=["DELETE"], strict_slashes=False)
+@jwt_required()
 def delete_user(user_id):
     """
     Deletes the User with id `user_id`
@@ -117,3 +122,47 @@ def delete_user(user_id):
     storage.delete(user)
     storage.save()
     return jsonify({}), 200
+
+@app_views.route('/login', strict_slashes=False)
+def login():
+    content_type = request.headers.get("Content-Type")
+    if content_type != "application/json":
+        return jsonify({"message": "Not a JSON"}), 400
+    content = request.get_json()
+    if "password" not in content:
+        return jsonify({"message": "Missing password"}), 400
+    if "email" not in content:
+        return jsonify({"message": "Missing email"}), 400
+
+    email = content.get("email") 
+    password = content.get("password") 
+    user = storage.get(User, email=email)[0]
+    print(user.password)
+    if user:
+        is_pass_correct = check_password_hash(user.password, password)
+
+        if is_pass_correct:
+            refresh = create_refresh_token(identity=user.id)
+            access = create_access_token(identity=user.id, fresh=datetime.timedelta(minutes=60))
+
+            return jsonify({
+                'user': {
+                    'refresh': refresh,
+                    'access': access,
+                   # 'username': user.username,
+                    'email': user.email
+                }
+
+            }), 200 
+
+    return jsonify({'error': 'Wrong credentials'}), 401 
+
+@app_views.route('/token/refresh', strict_slashes=False)
+@jwt_required(refresh=True)
+def refresh_users_token():
+    identity = get_jwt_identity()
+    access = create_access_token(identity=identity, fresh=datetime.timedelta(minutes=60))
+
+    return jsonify({
+        'access': access
+    }), 200
