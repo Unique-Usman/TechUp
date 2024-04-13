@@ -39,20 +39,36 @@ def create_user():
         return jsonify({"message": "Missing password"}), 400
     if "email" not in content:
         return jsonify({"message": "Missing email"}), 400
+    if "username" not in content:
+        return jsonify({"message": "Missing username"}), 400
+
     email = content.get("email")
+    username = content.get("username")
     existing_email = storage.get(User, email=email)
+    existing_username = storage.get(User, username=username)
+
     if len(existing_email) > 0:
         existing_email = existing_email[0]
+
+    if len(existing_username) > 0:
+        existing_username = existing_username[0]
+
     if existing_email:
         return jsonify({
             'error': "A user with this email address already exists"}
             ), 400
+
+    if existing_username:
+        return jsonify({
+            'error': "A user with this username already exists"}
+            ), 400
+
     if not validators.email(email):
         return jsonify({'error': "Email is not valid"}), 400
+
     if "github" not in content:
         return jsonify({"message": "Missing Github link"}), 400
-    # if "username" not in content:
-        # return jsonify({"message": "Missing User name"}), 400
+    print(email)
     token = get_token(email)
     password = content.get("password")
     pwd_hash = generate_password_hash(password)
@@ -89,6 +105,17 @@ def get_user(user_id):
     user = user.to_dict()
     return jsonify(user)
 
+@app_views.route("/users/username/<username>", strict_slashes=False)
+def get_user_with_username(username):
+    """
+    Returns the User with username `username`
+    """
+    user = storage.get(User, username=username)
+    if not user:
+        abort(404)
+    user = user[0]
+    user = user.to_dict()
+    return jsonify(user)
 
 @app_views.route("/users/<user_id>", methods=["PUT"], strict_slashes=False)
 @jwt_required()
@@ -137,7 +164,11 @@ def login():
     email = content.get("email") 
     password = content.get("password") 
     user = storage.get(User, email=email)[0]
-    print(user.password)
+    if user.confirmed == False:
+        token = get_token(email)
+        send_confirm_email(email, token)
+        return jsonify({"message": "Your email has not been verified. Kindly, check your mail to do so"}), 403
+
     if user:
         is_pass_correct = check_password_hash(user.password, password)
 
@@ -149,7 +180,7 @@ def login():
                 'user': {
                     'refresh': refresh,
                     'access': access,
-                   # 'username': user.username,
+                    'username': user.username,
                     'email': user.email
                 }
 

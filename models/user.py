@@ -31,6 +31,7 @@ class User(BaseModel, Base):
 
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
+    username = Column(String(128), nullable=False)
     email = Column(String(128), nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
     password = Column(String(256), nullable=False)

@@ -2,7 +2,7 @@
 
 from flask_mail import Message
 from flask import render_template_string
-from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from api.v1 import mail, app
 from models.user import User
 from models import storage
