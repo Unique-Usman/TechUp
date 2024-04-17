@@ -6,6 +6,7 @@ from api.v1.views import app_views
 from models.opportunity_type import Opportunity_type
 from flask import abort, jsonify, request
 from models import storage
+from flask_jwt_extended import jwt_required
 
 
 @app_views.route("/opportunity_types", strict_slashes=False)
@@ -34,6 +35,7 @@ def get_opportunity_type(type_id):
 
 
 @app_views.route("/opportunity_type/<type_id>/users", strict_slashes=False)
+@jwt_required()
 def get_all_subscribers_of_an_opportunity_type(type_id):
     """
     Returns all subscribers/users of an opportunity type

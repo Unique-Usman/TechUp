@@ -119,9 +119,14 @@ class DBStorage:
 
         return count
 
-
     def execute(self, association_table, data):
         """
         Adds data to association table
         """
         return self.__session.execute(association_table.insert(), data)
+
+    def paginate(self, cls, page=1, per_page=5):
+        """
+        Paginates data to be sent as response
+        """
+        return self.__session.query(cls).limit(per_page).offset((page - 1) * per_page).all()

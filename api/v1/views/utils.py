@@ -16,14 +16,16 @@ def send_confirm_email(email, token):
                   recipients=[email], html=html)
     mail.send(msg)
 
+
 def get_token(email, expires_sec=1800):
     s = Serializer(app.config['SECRET_KEY'], expires_sec)
     return s.dumps({'email': email}).decode('utf-8')
+
 
 def verify_reset_token(token):
     s = Serializer(app.config['SECRET_KEY'])
     try:
         email = s.loads(token)['email']
-    except:
+    except Exception:
         return None
     return storage.get(User, email=email)[0]
