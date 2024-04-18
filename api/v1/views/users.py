@@ -193,7 +193,7 @@ def delete_user(user_id):
     return jsonify({}), 200
 
 
-@app_views.route('/login', strict_slashes=False)
+@app_views.route('/login', strict_slashes=False, methods=["POST"])
 def login():
     content_type = request.headers.get("Content-Type")
     if content_type != "application/json":
