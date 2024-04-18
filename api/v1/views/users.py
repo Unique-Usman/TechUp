@@ -242,7 +242,6 @@ def refresh_users_token():
     identity = get_jwt_identity()
     access = create_access_token(identity=identity,
                                  fresh=datetime.timedelta(minutes=60))
-
     return jsonify({
         'access': access
     }), 200

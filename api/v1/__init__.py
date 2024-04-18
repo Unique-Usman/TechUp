@@ -18,6 +18,7 @@ def after_request_func(response):
         response = make_response()
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Headers', 'Authorization')
         response.headers.add('Access-Control-Allow-Headers', 'x-csrf-token')
         response.headers.add('Access-Control-Allow-Methods',
                             'GET, POST, OPTIONS, PUT, PATCH, DELETE')
