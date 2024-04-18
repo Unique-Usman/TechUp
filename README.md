@@ -11,7 +11,7 @@ techUp is a website designed to help users find and manage tech opportunities an
 
 ## Technologies Used
 
-- **Frontend:** HTML, CSS, JavaScript, Bootstrap
+- **Frontend:** HTML, CSS, ReactJS
 - **Backend:** Flask (Python)
 - **Database:** SQLite, MySQL (for production)
 - **Authentication:** Flask-Login
@@ -32,4 +32,4 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GPL](LICENSE).
