@@ -12,6 +12,7 @@ import RequireAuth from "./components/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
 import { Routes, Route } from "react-router-dom";
 import Opportunities from "./components/Opportunity";
+import CreateOpportunities from "./components/PostOpportunity";
 
 const ROLES = {
   User: 2001,
@@ -28,9 +29,9 @@ function App() {
         <Route path="register" element={<Register />} />
         <Route path="linkpage" element={<LinkPage />} />
         <Route path="unauthorized" element={<Unauthorized />} />
-        <Route path="admin" element={<Admin />} />
         <Route path="/" element={<Home />} />
-        <Route path="opportunities" element={<Opportunities />} />
+
+        {/* <Route path="create_opportunity" element={<CreateOpportunities />} /> */}
         {/* <Route path="admin" element={<Admin />} /> */}
         {/* <Route path="/" element={<Home />} /> */}
 
@@ -39,14 +40,25 @@ function App() {
         {/* <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
             <Route path="/" element={<Home />} />
           </Route> */}
+        <Route element={<PersistLogin />}>
+          <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+            <Route
+              path="create_opportunity"
+              element={<CreateOpportunities />}
+            />
+          </Route>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+            <Route path="admin" element={<Admin />} />
+          </Route>
+
+          <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+            <Route path="opportunities" element={<Opportunities />} />
+          </Route>
+        </Route>
 
         {/* <Route element={<RequireAuth allowedRoles={[ROLES.Editor]} />}>
             <Route path="editor" element={<Editor />} />
           </Route> */}
-
-        {/* <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
-          <Route path="admin" element={<Admin />} />
-        </Route> */}
 
         {/* <Route
             element={<RequireAuth allowedRoles={[ROLES.Editor, ROLES.Admin]} />}

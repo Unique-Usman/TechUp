@@ -4,7 +4,7 @@ Handles all the default RESTful API actions of the User object
 """
 from api.v1.views import app_views
 from models.user import User
-from flask import abort, jsonify, request
+from flask import abort, jsonify, request, make_response
 import validators
 import datetime
 from models import storage
@@ -18,7 +18,8 @@ from flask_jwt_extended import (
     jwt_required,
     create_access_token,
     create_refresh_token,
-    get_jwt_identity
+    get_jwt_identity,
+    decode_token
 )
 
 
@@ -217,31 +218,56 @@ def login():
 
     if user:
         is_pass_correct = check_password_hash(user.password, password)
-
         if is_pass_correct:
             refresh = create_refresh_token(identity=user.id)
             access = create_access_token(identity=user.id,
                                          fresh=datetime.timedelta(minutes=60))
-
-            return jsonify({
+            # we might need to add this to the database but, for now, we can use this placeholder.
+            roles = [2001]
+            if user.first_name == "Usman" or user.first_name == "Henshaw":
+                roles.append(5150)
+            resp = make_response(jsonify({
                 'user': {
-                    'refresh': refresh,
                     'access': access,
                     'username': user.username,
-                    'email': user.email
+                    'email': user.email,
+                    "roles": roles
                 }
-
-            }), 200
+            }), 200)
+            resp.set_cookie('refresh_token', refresh, httponly=True, samesite='None', secure=True)
+            return resp
 
     return jsonify({'error': 'Wrong credentials'}), 401
 
 
 @app_views.route('/token/refresh', strict_slashes=False)
-@jwt_required(refresh=True)
 def refresh_users_token():
-    identity = get_jwt_identity()
-    access = create_access_token(identity=identity,
-                                 fresh=datetime.timedelta(minutes=60))
-    return jsonify({
-        'access': access
-    }), 200
+    session_token = request.cookies.get('refresh_token')
+    if not session_token:
+        return jsonify({'message': 'Missing refresh token'}), 401
+    try:
+        token_data = decode_token(session_token)
+        identity = token_data['sub']  # 'sub' is the key for the identity in the token
+    except Exception as e:
+        return jsonify({'message': 'Invalid refresh token'}), 401
+    
+    user = storage.get(User, id=identity)
+    # we might need to add this to the database but, for now, we can use this placeholder.
+    roles = [2001]
+    if user.first_name == "Usman" or user.first_name == "Henshaw":
+        roles.append(5150)
+    access = create_access_token(identity=identity, fresh=datetime.timedelta(minutes=60))
+
+    return jsonify({'access': access, 'roles': roles}), 200
+
+
+@app_views.route('/logout', strict_slashes=False)
+def logout():
+    # Clear the refresh token cookie on the client side
+    session_token = request.cookies.get('refresh_token')
+    if session_token is None:
+        return jsonify({'message': 'No refresh token found'}), 400
+
+    response = make_response(jsonify({'message': 'Logged out successfully'}), 200)
+    response.set_cookie('refresh_token', '', httponly=True, samesite='None', secure=True, path="/", expires=0)
+    return response

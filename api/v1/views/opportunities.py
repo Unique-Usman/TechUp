@@ -6,7 +6,11 @@ from api.v1.views import app_views
 from models.opportunities import Opportunity
 from flask import abort, jsonify, request
 from models import storage
-
+from models.opportunity_type import Opportunity_type
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity
+)
 
 @app_views.route("/opportunities", strict_slashes=False)
 def get_opportunities():
@@ -22,6 +26,7 @@ def get_opportunities():
 
 
 @app_views.route("/opportunities", methods=["POST"], strict_slashes=False)
+@jwt_required()
 def create_opportunity():
     """
     Creates a new opportunity
@@ -38,13 +43,16 @@ def create_opportunity():
         return jsonify({"message": "Missing deadline"}), 400
     if "description" not in content:
         return jsonify({"message": "Missing description"}), 400
-    if "opportunity_type_id" not in content:
+    if "opportunity_type" not in content:
         return jsonify({"message": "Missing opportunity type"}), 400
 
+    print(storage.get(Opportunity_type, name=content["opportunity_type"]))
+    opportunity_id = (storage.get(Opportunity_type, name=content["opportunity_type"])[0]).id
     opportunity = Opportunity()
     for key, value in content.items():
-        if key not in ["id", "created_at", "updated_at"]:
+        if key not in ["id", "created_at", "updated_at", "opportunity_type"]:
             setattr(opportunity, key, value)
+    setattr(opportunity, "opportunity_type_id", opportunity_id)
     storage.new(opportunity)
     storage.save()
     return jsonify(opportunity.to_dict())

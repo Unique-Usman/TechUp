@@ -53,6 +53,8 @@ a:visited {
 input[type="text"],
 input[type="password"],
 input[type="email"],
+input[type="datetime-local"],
+select,
 button,
 textarea {
   font-family: "Nunito", sans-serif;

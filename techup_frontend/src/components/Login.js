@@ -44,24 +44,22 @@ const Login = () => {
         }
       );
       const access = response?.data?.user?.access;
-      const refresh = response?.data?.user?.refresh;
       const username = response?.data?.user?.username;
+      const roles = response?.data?.user?.roles;
       setAuth({
         email,
-        password: pwd,
-        refresh,
+        roles,
         access,
         username,
-        role: [2001],
+        roles,
       });
 
       console.log({
         email,
-        password: pwd,
-        refresh,
+        roles,
         access,
         username,
-        role: [2001],
+        roles,
       });
       resetEmail();
       setPwd("");

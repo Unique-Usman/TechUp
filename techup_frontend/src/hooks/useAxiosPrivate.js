@@ -12,7 +12,6 @@ const useAxiosPrivate = () => {
       (config) => {
         if (!config.headers["Authorization"]) {
           config.headers["Authorization"] = `Bearer ${auth?.access}`;
-          console.log(auth.access);
         }
         return config;
       },

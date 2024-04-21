@@ -18,10 +18,8 @@ const Opportunities = () => {
         const response = await axiosPrivate.get("/opportunities", {
           signal: controller.signal,
         });
-        console.log(response.data);
         isMounted && setOpportunities(response.data.results);
       } catch (err) {
-        console.error(err);
         navigate("/login", { state: { from: location }, replace: true });
       }
     };
