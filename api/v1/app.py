@@ -2,7 +2,7 @@
 """
 Entry point for the api
 """
-from flask import Flask, make_response, jsonify
+from flask import make_response, jsonify
 from api.v1 import app
 
 from models import storage
