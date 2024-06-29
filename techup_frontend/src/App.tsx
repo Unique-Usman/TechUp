@@ -1,9 +1,37 @@
-import { ReactElement } from "react";
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-export default function App(): ReactElement{
+import AppLayout from './ui/AppLayout';
+import Home from './pages/Home';
+import GlobalStyles from './styles/GlobalStyles';
+import Login from './pages/Login'; 
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    // errorElement: <Error/>,
+
+    children: [
+      {
+        path: "/",
+        element: <Home/>
+      }
+    ]
+  },
+  {
+    path: "/login",
+    element: <Login />
+  }
+
+])
+
+
+function App() {
   return (
-    <div>
-      TechUp
-    </div>
+    <>
+      <GlobalStyles/>
+      <RouterProvider router={router} />
+    </>
   )
 }
+
+export default App;
