@@ -7,15 +7,19 @@ import { loginStart, loginSuccess, loginFailure } from "./authSlice"
 import { login } from "../../services/apiLogin";
 
 import Button from "../../ui/Button";
+import ButtonLink from "../../ui/ButtonLink";
 import Form from "../../ui/Form";
 import Input from "../../ui/Input";
 import FormRowVertical from "../../ui/FormRowVertical";
 import SpinnerMini from "../../ui/SpinnerMini";
 import { RootState } from "../../store"
+import Checkbox from "../../ui/Checkbox";
+import FlexChildren from "../../ui/FlexChildren";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isChecked, setIsChecked] = useState(false); //to be changed. 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,6 +71,10 @@ function LoginForm() {
           {!isLoading ? "Log in" : <SpinnerMini />}
         </Button>
       </FormRowVertical>
+      <FlexChildren>
+        <Checkbox checked={isChecked} id="persistlogin" onChange={() => setIsChecked(!isChecked)}>Persist Login</Checkbox>
+        <ButtonLink to="/signup">Sign Up Instead</ButtonLink>
+      </FlexChildren>
     </Form>
   );
 }
