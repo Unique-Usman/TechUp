@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Heading from "./Heading";
 import GlobalStyles from "../styles/GlobalStyles";
 import Button from "./Button";
+import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
 
 const StyledErrorFallback = styled.main`
   height: 100vh;
@@ -27,20 +28,33 @@ const Box = styled.div`
   }
 
   & p {
-    font-family: "Sono";
     margin-bottom: 3.2rem;
     color: var(--color-grey-500);
   }
 `;
-function ErrorFallback({ error, resetErrorBoundary }) {
+function ErrorFallback() {
+  const error: any = useRouteError();
+
+  let errorMessage: string;
+
+  if (isRouteErrorResponse(error)) {
+    errorMessage = error.statusText;
+  } else if (error instanceof Error) {
+    errorMessage = error.message;
+  } else if (typeof error === 'string') {
+    errorMessage = error;
+  } else {
+    errorMessage = error.data || 'Unknown error';
+  }
+
   return (
     <>
       <GlobalStyles />
       <StyledErrorFallback>
         <Box>
           <Heading as="h1">Something went wrong 🧐</Heading>
-          <p>{error.message}</p>
-          <Button size="large" onClick={resetErrorBoundary}>
+          <p>{errorMessage}</p>
+          <Button size="large" onClick={() => window.location.replace("/")}>
             Try again
           </Button>
         </Box>

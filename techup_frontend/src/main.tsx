@@ -1,21 +1,24 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from './App.tsx'
-// import { ErrorBoundary } from "react-error-boundary";
-// import ErrorFallback from "./ui/ErrorFallback";
 
 import store from './store.ts'
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 0,
+    }
+  }
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* <ErrorBoundary */}
-    {/*   FallbackComponent={ErrorFallback} */}
-    {/*   onReset={() => window.location.replace("/")} */}
-    {/* > */}
-    <Provider store={store}>
-      <App />
-    </Provider>
-    {/* </ErrorBoundary> */}
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </QueryClientProvider>
   </React.StrictMode>,
 )

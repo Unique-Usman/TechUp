@@ -5,11 +5,18 @@ import Home from './pages/Home';
 import GlobalStyles from './styles/GlobalStyles';
 import Login from './pages/Login'; 
 import { Toaster } from 'react-hot-toast';
+import ProtectedRoute from './ui/ProtectedRoute';
+import PageNotFound from './pages/PageNotFound';
+import ErrorFallback from './ui/ErrorFallback';
+import Users from "./pages/Users";
 
 const router = createBrowserRouter([
   {
-    element: <AppLayout />,
-    // errorElement: <Error/>,
+    element: 
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>,
+      errorElement: <ErrorFallback/>,
 
     children: [
       {
@@ -21,8 +28,15 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
+  },
+  {
+    path: "/signup",
+    element: <Users/> 
+  },
+  {
+    path: "*",
+    element: <PageNotFound/>
   }
-
 ])
 
 

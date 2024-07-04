@@ -50,8 +50,9 @@ const variations = {
 
 interface ButtonProps {
   variation?: "primary" | "secondary" | "danger";
-  size: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large";
   disabled?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 
@@ -60,7 +61,7 @@ const Button = styled.button<ButtonProps>`
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
 
-  ${(props) => sizes[props.size]}
+  ${(props) => props.size && sizes[props.size]}
   ${(props) => props.variation && variations[props.variation]}
 `;
 
