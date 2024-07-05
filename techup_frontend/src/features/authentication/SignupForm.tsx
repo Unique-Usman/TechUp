@@ -4,6 +4,8 @@ import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import { useSignup } from "./useSignup";
+import toast from "react-hot-toast"
+import { useNavigate } from "react-router";
 
 // Email regex: /\S+@\S+\.\S+/
 
@@ -23,13 +25,21 @@ function SignupForm() {
   const { register, formState, getValues, handleSubmit, reset } = useForm<FormValues>();
   const isLoading = status === "pending";
   const { errors } = formState;
+  const navigate = useNavigate();
 
   function onSubmit({firstName, lastName, email, password, github, username}: FormValues) {
     signup(
       { firstName, lastName, email, password, github, username},
       {
         onSettled: () => reset(),
+        onSuccess: () => {
+          toast.success(
+            "Account successfully created! Please verify the new account from the user's email address."
+          );
+          navigate("/login");
+        },
       }
+
     );
   }
 
@@ -44,7 +54,7 @@ function SignupForm() {
         />
       </FormRow>
 
-       <FormRow label="Last Name" error={errors?.lastName?.message}>
+      <FormRow label="Last Name" error={errors?.lastName?.message}>
         <Input
           type="text"
           id="lastName"
@@ -77,7 +87,7 @@ function SignupForm() {
         />
       </FormRow>
 
-      
+
       <FormRow label="Github" error={errors?.github?.message}>
         <Input
           type="github"

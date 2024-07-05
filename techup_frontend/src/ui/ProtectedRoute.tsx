@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { RootState } from "../store"
 import Spinner from "./Spinner";
@@ -16,6 +16,7 @@ const FullPage = styled.div`
 
 function ProtectedRoute({ children }: {children: ReactElement}) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 1. Load the authenticated user
   const { loading: isLoading, isAuthenticated } = useSelector((store: RootState) => store.auth);
@@ -24,7 +25,7 @@ function ProtectedRoute({ children }: {children: ReactElement}) {
   // 2. If there is NO authenticated user, redirect to the /login
   useEffect(
     function () {
-      if (!isAuthenticated && !isLoading) navigate("/login");
+      if (!isAuthenticated && !isLoading) navigate('/login', { state: { from: location } });
     },
     [isAuthenticated, isLoading, navigate]
   );

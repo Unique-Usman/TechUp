@@ -9,6 +9,7 @@ import ProtectedRoute from './ui/ProtectedRoute';
 import PageNotFound from './pages/PageNotFound';
 import ErrorFallback from './ui/ErrorFallback';
 import Users from "./pages/Users";
+import Account from './pages/Account';
 
 const router = createBrowserRouter([
   {
@@ -17,11 +18,14 @@ const router = createBrowserRouter([
         <AppLayout />
       </ProtectedRoute>,
       errorElement: <ErrorFallback/>,
-
     children: [
       {
         path: "/",
         element: <Home/>
+      },
+      {
+        path: "/account",
+        element: <Account/>
       }
     ]
   },

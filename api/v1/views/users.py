@@ -4,23 +4,25 @@ Handles all the default RESTful API actions of the User object
 """
 from api.v1.views import app_views
 from models.user import User
-from flask import abort, jsonify, request, make_response
+from flask import abort, jsonify, request, make_response, url_for
 import validators
 import datetime
+import json
 from models import storage
 from werkzeug.security import check_password_hash, generate_password_hash
 from api.v1.views.utils import (
-    send_confirm_email,
-    get_token,
-    verify_reset_token
-)
+        send_confirm_email,
+        get_token,
+        verify_reset_token,
+        save_picture
+        )
 from flask_jwt_extended import (
-    jwt_required,
-    create_access_token,
-    create_refresh_token,
-    get_jwt_identity,
-    decode_token
-)
+        jwt_required,
+        create_access_token,
+        create_refresh_token,
+        get_jwt_identity,
+        decode_token
+        )
 
 
 @app_views.route("/users", strict_slashes=False)
@@ -81,19 +83,18 @@ def create_user():
     if existing_email:
         return jsonify({
             'error': "A user with this email address already exists"}
-            ), 400
+                       ), 400
 
     if existing_username:
         return jsonify({
             'error': "A user with this username already exists"}
-            ), 400
+                       ), 400
 
     if not validators.email(email):
         return jsonify({'error': "Email is not valid"}), 400
 
     if "github" not in content:
         return jsonify({"message": "Missing Github link"}), 400
-    print(email)
     token = get_token(email)
     password = content.get("password")
     pwd_hash = generate_password_hash(password)
@@ -163,21 +164,45 @@ def get_user_with_username(username):
 @app_views.route("/users/<user_id>", methods=["PUT"], strict_slashes=False)
 @jwt_required()
 def update_user(user_id):
-    """
-    Updates information of User with id `user_id`
-    """
     user = storage.get(User, id=user_id)
     if not user:
         abort(404)
-    content_type = request.headers.get("Content-Type")
-    if content_type != "application/json":
-        return jsonify({"message": "Not a JSON"}), 400
-    content = request.get_json()
+
+    # Handle JSON data
+    first_name = request.form.get("first_name", None) 
+    last_name = request.form.get("last_name", None) 
+    password = request.form.get("password", None) 
+
+    content = {}
+    if first_name:
+        content["first_name"] = first_name
+    if last_name:
+        content["last_name"] = last_name
+    if password:
+        pwd_hash = generate_password_hash(password)
+        setattr(user, "password", pwd_hash)
     for key, value in content.items():
         if key not in ["id", "created_at", "updated_at", "email"]:
             setattr(user, key, value)
+
+    file = request.files.get('file')
+    if file:
+        picture_fn = save_picture(file)
+        image_url = url_for('static', filename='profile_pics/' + picture_fn, _external=True)
+        user.picture_link = image_url 
+
     storage.save()
-    return jsonify(user.to_dict()), 200
+    return jsonify({
+                'user': {
+                    "username": user.username,
+                    "email": user.email,
+                    "last_name": user.last_name,
+                    "first_name": user.first_name,
+                    "github": user.github,
+                    "picture_link": user.picture_link,
+                    "id": user.id
+                    }
+                }), 200
 
 
 @app_views.route("/users/<user_id>", methods=["DELETE"], strict_slashes=False)
@@ -207,13 +232,15 @@ def login():
 
     email = content.get("email")
     password = content.get("password")
-    user = storage.get(User, email=email)[0]
+    users = storage.get(User, email=email)
+    if not users:
+        return jsonify({'error': 'Wrong credentials'}), 401
+    user = users[0]
     if user.confirmed is False:
         token = get_token(email)
         send_confirm_email(email, token)
         return jsonify({
-            "message": ("Your email has not been verified. "
-                        "Kindly, check your mail to do so")
+            "error": ("Your email has not been verified. Kindly, check your mail to do so")
             }), 403
 
     if user:
@@ -228,12 +255,17 @@ def login():
                 roles.append(5150)
             resp = make_response(jsonify({
                 'user': {
-                    'access': access,
-                    'username': user.username,
-                    'email': user.email,
-                    "roles": roles
-                }
-            }), 200)
+                    "access": access,
+                    "username": user.username,
+                    "email": user.email,
+                    "roles": roles,
+                    "last_name": user.last_name,
+                    "first_name": user.first_name,
+                    "github": user.github,
+                    "picture_link": user.picture_link,
+                    "id": user.id
+                    }
+                }), 200)
             resp.set_cookie('refresh_token', refresh, httponly=True, samesite='None', secure=True)
             return resp
 
@@ -250,7 +282,7 @@ def refresh_users_token():
         identity = token_data['sub']  # 'sub' is the key for the identity in the token
     except Exception as e:
         return jsonify({'message': 'Invalid refresh token'}), 401
-    
+
     user = storage.get(User, id=identity)
     # we might need to add this to the database but, for now, we can use this placeholder.
     roles = [2001]

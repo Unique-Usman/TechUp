@@ -5,6 +5,11 @@ interface User {
   roles: string[]; 
   access: string; 
   username: string;
+  last_name: string;
+  first_name: string;
+  github: string;
+  picture_link?: string | object;
+  id: string;
 }
 
 export interface AuthState {

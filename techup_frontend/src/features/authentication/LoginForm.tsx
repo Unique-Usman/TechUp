@@ -38,7 +38,7 @@ function LoginForm() {
       navigate(from, { replace: true });
     } catch (error) {
       const err = error as AxiosError<any, any>;
-      dispatch(loginFailure(err?.response?.data.error) || "Login Failed"); 
+      dispatch(loginFailure(err?.response?.data.error) || err.message || "Login Failed"); 
       toast.error(userError || "Login Failed");
     }
 

@@ -12,19 +12,9 @@ export interface SignupRequest {
   username: string;
 }
 
-// interface SignupResponse {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   github: string;
-//   username: string;
-//   token: string; // Assuming the response includes a token
-// }
 export interface SignupError {
   message: string;
 }
-
 
 export async function  signup (user: SignupRequest): Promise<any> {
   try {

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, BLOB, ForeignKey, Table, Boolean
+from sqlalchemy import Column, String, ForeignKey, Table, Boolean
 from os import getenv
 from sqlalchemy.orm import backref, relationship
 # from models.place import Place
@@ -37,7 +37,7 @@ class User(BaseModel, Base):
     password = Column(String(256), nullable=False)
     github = Column(String(256), nullable=True)
     twitter = Column(String(256), nullable=True)
-    picture = Column(BLOB, nullable=True)
+    picture_link = Column(String(256), nullable=True)
     opportunities = relationship("Opportunity", 
                             backref="user", cascade="all, delete, delete-orphan")
     subscriptions = relationship("Opportunity_type", secondary=subscriptions,

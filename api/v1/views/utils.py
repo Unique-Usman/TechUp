@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+
+import os
 from flask_mail import Message
 from flask import render_template_string
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -7,6 +9,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from api.v1 import mail, app
 from models.user import User
 from models import storage
+import secrets
+from PIL import Image
 
 
 def send_confirm_email(email, token):
@@ -30,3 +34,19 @@ def verify_reset_token(token):
     except Exception:
         return None
     return storage.get(User, email=email)[0]
+
+# Image setup
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, file_ext = os.path.splitext(form_picture.filename)
+    picture_file_name = random_hex + file_ext
+    picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_file_name)
+
+    os.makedirs(os.path.dirname(picture_path), exist_ok=True)
+
+    output_size = (125, 125)
+    image = Image.open(form_picture)
+    image.thumbnail(output_size)
+    image.save(picture_path)
+
+    return picture_file_name

@@ -10,3 +10,9 @@ export const axiosPrivate = axios.create({
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
+
+export const axiosUpdateUser= axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "multipart/form-data" },
+  withCredentials: true,
+});
