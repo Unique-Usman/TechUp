@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { loginStart, loginSuccess, loginFailure } from "./authSlice" 
 import { login } from "../../services/apiLogin";
+import { useLocalStorageState } from "../../hooks/useLocalStorageState";
 
 import Button from "../../ui/Button";
 import ButtonLink from "../../ui/ButtonLink";
@@ -19,7 +20,7 @@ import FlexChildren from "../../ui/FlexChildren";
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isChecked, setIsChecked] = useState(false); //to be changed. 
+  const [isPersist, setItPersist] = useLocalStorageState("persist", false); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,7 +74,7 @@ function LoginForm() {
         </Button>
       </FormRowVertical>
       <FlexChildren>
-        <Checkbox checked={isChecked} id="persistlogin" onChange={() => setIsChecked(!isChecked)}>Persist Login</Checkbox>
+        <Checkbox checked={isPersist} id="persistlogin" onChange={() => setItPersist(!isPersist)}>Persist Login</Checkbox>
         <ButtonLink to="/signup">Sign Up Instead</ButtonLink>
       </FlexChildren>
     </Form>
