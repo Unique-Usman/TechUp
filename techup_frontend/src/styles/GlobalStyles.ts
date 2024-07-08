@@ -4,6 +4,7 @@ const GlobalStyles = createGlobalStyle`
 :root {
   &.light-mode {
     /* Zinc */
+    --color-zinc-0: #fafafa;
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f4f4f5;
     --color-zinc-200: #e4e4e7;
